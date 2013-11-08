@@ -1,0 +1,8 @@
+task myJar(type: Jar) {
+    baseName = 'jar-from-b'
+    from project.sourceSets.main.output
+}
+
+artifacts {
+    myArchives myJar
+}

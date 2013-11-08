@@ -1,0 +1,20 @@
+apply plugin: 'maven'
+
+dependencies {
+    compile project(path: ':b', configuration: 'myArchives')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "") {
+                authentication(userName: "", password: "")
+            }
+            afterEvaluate {
+                pom.version = project.version
+                pom.artifactId = project.name
+                pom.groupId = project.group
+            }
+        }
+    }
+}
