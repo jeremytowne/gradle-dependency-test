@@ -4,6 +4,23 @@ dependencies {
     compile project(path: ':b', configuration: 'myArchives')
 }
 
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main/groovy'
+        }
+    }
+}
+
+task myJar(type: Jar) {
+    baseName = 'jar-from-a'
+    from project.sourceSets.main.output
+}
+
+artifacts {
+    myArchives myJar
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

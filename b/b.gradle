@@ -1,3 +1,11 @@
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main/groovy'
+        }
+    }
+}
+
 task myJar(type: Jar) {
     baseName = 'jar-from-b'
     from project.sourceSets.main.output

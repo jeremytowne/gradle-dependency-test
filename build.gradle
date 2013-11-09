@@ -4,8 +4,12 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'groovy'
+    apply plugin: 'groovy-base'
     configurations.create('myArchives')
+    configurations.create('compile')
+    configurations.create('runtime')
+    configurations.create('testCompile')
+    configurations.create('testRuntime')
     repositories {
         mavenCentral()
     }
