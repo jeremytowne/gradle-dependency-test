@@ -8,7 +8,7 @@ sourceSets {
 
 task myJar(type: Jar) {
     baseName = 'jar-from-b'
-    classifier = 'dep'
+    //classifier = 'dep'
     from project.sourceSets.main.output
 }
 

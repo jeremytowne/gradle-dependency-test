@@ -1,4 +1,4 @@
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 dependencies {
     compile project(path: ':b', configuration: 'myArchives')
@@ -17,21 +17,50 @@ task myJar(type: Jar) {
     from project.sourceSets.main.output
 }
 
-artifacts {
-    myArchives myJar
-}
-
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            repository(url: "") {
-                authentication(userName: "", password: "")
-            }
-            afterEvaluate {
-                pom.version = project.version
-                pom.artifactId = project.name
-                pom.groupId = project.group
+        maven {
+            url "http://kvs-us-factory.int.kronos.com:8081/artifactory/k08-00"
+            credentials {
+                username = "artifactoryuploader"
+                password = "kronites"
             }
         }
     }
+
+    publications.create(myJar.name, MavenPublication) {
+        artifactId = myJar.baseName
+        groupId = project.group
+        artifact myJar
+        
+        addAllProjectDependenciesToPom(pom, configurations.runtime)
+    }
+}
+
+def addAllProjectDependenciesToPom(pom, Configuration configuration){
+    pom.withXml { provider ->
+        def node = provider.asNode()
+        def dependenciesNode = node.dependencies
+        if(!dependenciesNode) {
+            dependenciesNode = node.appendNode('dependencies')
+        }
+        configuration.allDependencies.withType(ModuleDependency).each{ moduleDep ->
+            if(moduleDep instanceof ProjectDependency) {
+                moduleDep.getProjectConfiguration().getAllArtifacts().each { artifact ->
+                    def artifactId = "${artifact.name}" + (artifact.classifier ? "-${artifact.classifier}" : "")
+                    addDependencyNodeToPom(dependenciesNode, configuration.name, moduleDep.group, artifactId, moduleDep.version)
+                }
+            } else {
+                addDependencyNodeToPom(dependenciesNode, configuration.name, moduleDep.group, moduleDep.name, moduleDep.version)
+            }
+        }
+    }
+}
+
+def addDependencyNodeToPom(dependenciesNode, scope, group, artifact, version) {
+    def dependencyNode = dependenciesNode.appendNode('dependency')
+    dependencyNode.appendNode("scope", scope)
+    dependencyNode.appendNode("groupId", group)
+    dependencyNode.appendNode("artifactId", artifact)
+    dependencyNode.appendNode("version", version)
 }
