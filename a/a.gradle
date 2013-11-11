@@ -20,10 +20,10 @@ task myJar(type: Jar) {
 publishing {
     repositories {
         maven {
-            url "http://kvs-us-factory.int.kronos.com:8081/artifactory/k08-00"
+            url ""
             credentials {
-                username = "artifactoryuploader"
-                password = "kronites"
+                username = ""
+                password = ""
             }
         }
     }
